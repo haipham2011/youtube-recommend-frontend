@@ -1,0 +1,47 @@
+version: "3.5"
+
+services:
+  frontend:
+    build: ./client/
+    container_name: rt_frontend
+    volumes:
+      - ./client/:/client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+
+  server:
+    build: ./server/
+    container_name: rt_server
+    volumes:
+      - ./server/:/server
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+      - testdb
+
+  db:
+    image: postgres:12
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  testdb:
+    image: postgres:12
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=test_db
+      - POSTGRES_USER=test_postgres
+      - POSTGRES_PASSWORD=test_postgres
+
+volumes:
+  pgdata:
