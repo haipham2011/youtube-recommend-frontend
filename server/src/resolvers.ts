@@ -1,5 +1,5 @@
 import { IResolvers } from "graphql-tools";
-import { register } from "./utils/auth";
+import { register, verifyEmail } from "./utils/auth";
 
 const resolvers: IResolvers = {
   Query: {
@@ -7,6 +7,7 @@ const resolvers: IResolvers = {
   },
   Mutation: {
     register,
+    verifyEmail,
   },
 };
 

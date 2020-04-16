@@ -50,6 +50,9 @@ export class User extends BaseEntity {
   @IsDate()
   joinDate: Date;
 
+  @Column("boolean", { default: false })
+  isVerified: boolean;
+
   @BeforeInsert()
   addId() {
     this.id = uuidv4();

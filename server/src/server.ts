@@ -4,9 +4,20 @@ import * as dotenv from "dotenv";
 import { GraphQLServer } from "graphql-yoga";
 import { resolvers } from "./resolvers";
 import { createConnection, getConnectionOptions } from "typeorm";
+import * as Redis from "ioredis";
 
 dotenv.config();
-const server = new GraphQLServer({ typeDefs: "src/schema.graphql", resolvers });
+const redis = new Redis({
+  host: "redisdb",
+});
+
+const server = new GraphQLServer({
+  typeDefs: "src/schema.graphql",
+  resolvers,
+  context: () => ({
+    redis,
+  }),
+});
 
 export const startServer = async () => {
   try {
