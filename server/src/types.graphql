@@ -1,0 +1,8 @@
+type User {
+  id: String
+  email: String!
+  firstName: String
+  lastName: String
+  joinDate: String
+  errors: [String]
+}

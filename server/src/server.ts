@@ -16,7 +16,12 @@ export const startServer = async () => {
       name: "default",
     });
     if (connection.isConnected) {
-      await server.start();
+      const port =
+        process.env.NODE_ENV === "test"
+          ? process.env.TEST_PORT
+          : process.env.PORT;
+
+      await server.start({ port });
       console.log("Server is running on localhost:4000");
     } else {
       console.log("Fail to connect to database");
