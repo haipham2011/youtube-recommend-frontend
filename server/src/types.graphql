@@ -6,4 +6,5 @@ type User {
   joinDate: String
   isVerified: Boolean
   errors: [String]
+  message: [String]
 }

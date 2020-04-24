@@ -18,6 +18,8 @@ services:
       - ./server/:/server
     ports:
       - "4000:4000"
+    environment:
+      - DOCKER_SETTINGS=1
     depends_on:
       - db
       - testdb

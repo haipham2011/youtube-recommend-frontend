@@ -2,7 +2,12 @@ import * as bcrypt from "bcryptjs";
 import { User } from "../entity/User";
 import { getManager } from "typeorm";
 import { validate } from "class-validator";
-import { generateConfirmationLink } from "./utils";
+import {
+  generateConfirmationUid,
+  SendEmail,
+  EmailOptions,
+  EmailPerson,
+} from "./utils";
 import { Redis } from "ioredis";
 
 const register = async (
@@ -50,12 +55,39 @@ const register = async (
     }
     const result = await getManager().save(user);
 
-    const confirmationURL = await generateConfirmationLink(result.id, redis);
+    const confirmationUid = await generateConfirmationUid(result.id, redis);
 
-    console.log(confirmationURL);
+    /*
+    In SendInBlue template, use {{ params.URL }} and {{ params.NAME }}
+    to get the URL and NAME value in the emailOptions.params
+    */
 
+    const emailOptions: EmailOptions = {
+      templateId: 1,
+      to: [
+        { name: `${result.firstName} ${result.lastName}`, email: result.email },
+      ],
+      params: {
+        URL: confirmationUid,
+        NAME: `${result.firstName} ${result.lastName}`,
+      },
+    };
+    const sendEmail = new SendEmail(emailOptions);
+    const res = await sendEmail.send();
+    let message = [];
+    if (res.data && res.data.messageId) {
+      console.log("SENT!");
+      message.push("Confirmation email has been sent!");
+      message.push(res.data.messageId);
+    }
+
+    if (res.data && res.data.message) {
+      console.log(res.data.message);
+      message.push(res.data.message);
+    }
     return {
       ...result,
+      message,
     };
   } catch (err) {
     throw err;
