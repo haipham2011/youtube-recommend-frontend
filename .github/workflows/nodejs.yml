@@ -5,21 +5,38 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   test-backend:
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Rectue v.0.0.1
-      uses: actions/setup-node@v1
-      with:
-        node-version: '12.x'
-    - run: cd server
-    - run: npm install
-    - run: npm run test
+    services:
+      image: postgres
       env:
-        CI: true
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+
+      # Set health checks to wait until postgres has started
+      options: >-
+        --health-cmd pg_isready
+        --health-interval 10s
+        --health-timeout 5s
+        --health-retries 5
+      ports:
+        - 5433:5432
+    defaults:
+      run:
+        shell: bash
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v2
+      - name: Rectue v.0.0.1
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+      - run: npm install
+      - run: npm run test
+        env:
+          CI: true
