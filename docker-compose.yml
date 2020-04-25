@@ -18,13 +18,16 @@ services:
       - ./server/:/server
     ports:
       - "4000:4000"
+    environment:
+      - DOCKER_SETTINGS=1
     depends_on:
       - db
       - testdb
+      - redisdb
 
   db:
     image: postgres:12
-    restart: always
+    # restart: always
     ports:
       - "5432:5432"
     environment:
@@ -35,7 +38,7 @@ services:
 
   testdb:
     image: postgres:12
-    restart: always
+    # restart: always
     ports:
       - "5433:5432"
     environment:
@@ -43,5 +46,15 @@ services:
       - POSTGRES_USER=test_postgres
       - POSTGRES_PASSWORD=test_postgres
 
+  redisdb:
+    image: redis:latest
+    container_name: rt_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    entrypoint: redis-server --appendonly yes
+
 volumes:
   pgdata:
+  redisdata:

@@ -4,5 +4,7 @@ type User {
   firstName: String
   lastName: String
   joinDate: String
+  isVerified: Boolean
   errors: [String]
+  message: [String]
 }
